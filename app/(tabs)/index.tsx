@@ -1,14 +1,16 @@
-import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image } from "react-native";
+import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image, Pressable } from "react-native";
 import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
 import { Tabs } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 export default function Index() {
   const [displayCurrentAddress, setDisplayCurrentAddress] = useState('Location Loading.....');
   const [status, requestPermission] = Location.useForegroundPermissions();
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false)
+  const [selected, setSelected] = useState(false);
 
   requestPermission();
 
@@ -66,9 +68,39 @@ export default function Index() {
       <Image
         source={require('@/assets/images/nature-filler.jpg')}
       />
-      <Button title="Get User Location" onPress={getUserLocation} />
+      <Pressable
+      onPressIn={() => {
+        setSelected(!selected);
+        getUserLocation();
+      }}
+      onPressOut={() => setSelected(!selected)}
+      style={
+        {
+          backgroundColor: selected ? "red" : "blue",
+          paddingVertical: 5,
+          paddingHorizontal: 20,
+          borderRadius: 10
+        }
+      }
+      >
+        <Text
+        style= {
+          {
+            color: 'white',
+            fontWeight: 600
+          }
+        }
+        >hello</Text>
+      </Pressable>
       <Text>{displayCurrentAddress}</Text>
       <Text>Edit app/index.tsx to edit this screen.</Text>
     </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+  decoratedBtn: {
+    color: 'white'
+  }
+})
