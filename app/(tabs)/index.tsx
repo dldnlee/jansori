@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert } from "react-native";
+import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image } from "react-native";
 import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
+import { Tabs } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 
@@ -49,20 +50,23 @@ export default function Index() {
 
   }
 
-  useEffect(() => {
-    getUserLocation();
+  // useEffect(() => {
+  //   getUserLocation();
 
-  }, [])
+  // }, [])
 
 
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
         alignItems: "center",
       }}
     >
+      <Image
+        source={require('@/assets/images/nature-filler.jpg')}
+      />
+      <Button title="Get User Location" onPress={getUserLocation} />
       <Text>{displayCurrentAddress}</Text>
       <Text>Edit app/index.tsx to edit this screen.</Text>
     </View>
