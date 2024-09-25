@@ -1,9 +1,8 @@
 import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image, Pressable } from "react-native";
 import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
-import { Tabs } from "expo-router";
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { getWeather } from "@/api/getWeather";
 
 
 export default function Index() {
@@ -52,10 +51,20 @@ export default function Index() {
 
   }
 
-  // useEffect(() => {
-  //   getUserLocation();
+  async function test() {
+    try {
+      const data = await getWeather();
+      if (!data) return;
+      setDisplayCurrentAddress(JSON.stringify(data));
+    } catch (error) {
+      console.error("Error handling request", error);
+    }
+  }
 
-  // }, [])
+  useEffect(() => {
+    // console.log(getWeather());
+    test();
+  }, [])
 
 
   return (
@@ -68,30 +77,10 @@ export default function Index() {
       <Image
         source={require('@/assets/images/nature-filler.jpg')}
       />
-      <Pressable
-      onPressIn={() => {
-        setSelected(!selected);
-        getUserLocation();
-      }}
-      onPressOut={() => setSelected(!selected)}
-      style={
-        {
-          backgroundColor: selected ? "red" : "blue",
-          paddingVertical: 5,
-          paddingHorizontal: 20,
-          borderRadius: 10
-        }
-      }
-      >
-        <Text
-        style= {
-          {
-            color: 'white',
-            fontWeight: 600
-          }
-        }
-        >hello</Text>
-      </Pressable>
+      <Button
+      title="Press Me"
+      />
+      
       <Text>{displayCurrentAddress}</Text>
       <Text>Edit app/index.tsx to edit this screen.</Text>
     </View>
