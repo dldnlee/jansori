@@ -51,19 +51,15 @@ export default function Index() {
 
   }
 
-  async function test() {
-    try {
-      const data = await getWeather();
-      if (!data) return;
-      setDisplayCurrentAddress(JSON.stringify(data));
-    } catch (error) {
-      console.error("Error handling request", error);
-    }
+  async function getUserWeather() {
+    const data = await getWeather(37.561592, 127.4444);
+    setDisplayCurrentAddress(JSON.stringify(data.weather));
+
   }
 
+  
   useEffect(() => {
-    // console.log(getWeather());
-    test();
+    getUserWeather();
   }, [])
 
 
