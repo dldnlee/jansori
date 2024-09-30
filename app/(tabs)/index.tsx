@@ -3,6 +3,7 @@ import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { getWeather } from "@/api/getWeather";
+import Header from "@/components/Header";
 
 
 export default function Index() {
@@ -10,6 +11,9 @@ export default function Index() {
   const [status, requestPermission] = Location.useForegroundPermissions();
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false)
   const [selected, setSelected] = useState(false);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+
 
   requestPermission();
 
@@ -35,7 +39,9 @@ export default function Index() {
 
     if(coords) {
       const {latitude, longitude} = coords;
-      console.log(latitude, longitude);
+      // console.log(latitude, longitude);
+      setLatitude(latitude);
+      setLongitude(longitude);
 
       let response = await Location.reverseGeocodeAsync({
         latitude,
@@ -47,13 +53,17 @@ export default function Index() {
         let address = `${item.name} ${item.city} ${item.postalCode}`
         setDisplayCurrentAddress(address);
       }
-    };
-
+    }
   }
 
   async function getUserWeather() {
-    const data = await getWeather(37.561592, 127.4444);
-    setDisplayCurrentAddress(JSON.stringify(data.weather));
+    try {
+      const data = await getWeather(latitude, longitude);
+      const temp = data.main.temp
+      setDisplayCurrentAddress(Math.round(temp).toString());
+    } catch (error) {
+      console.error("Error fetching data", error)
+    }
 
   }
 
@@ -68,17 +78,18 @@ export default function Index() {
       style={{
         flex: 1,
         alignItems: "center",
+        backgroundColor: "#191724",
+        justifyContent: "center",
+        position: "relative"
       }}
     >
-      <Image
-        source={require('@/assets/images/nature-filler.jpg')}
-      />
+      <Header />
       <Button
       title="Press Me"
       />
       
-      <Text>{displayCurrentAddress}</Text>
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text style={styles.textColor}>{displayCurrentAddress}</Text>
+      <Text style={styles.textColor}>Edit app/index.tsx to edit this screen.</Text>
     </View>
   );
 }
@@ -86,6 +97,9 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   decoratedBtn: {
+    color: 'white'
+  },
+  textColor: {
     color: 'white'
   }
 })
