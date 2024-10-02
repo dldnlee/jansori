@@ -1,18 +1,21 @@
-import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image, Pressable } from "react-native";
-import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
+import { StyleSheet, Text, View, Button, Alert, Image } from "react-native";
 import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { getWeather } from "@/api/getWeather";
+import { getIconUrl } from "@/api/getIconUrl";
 import Header from "@/components/Header";
 
 
 export default function Index() {
-  const [displayCurrentAddress, setDisplayCurrentAddress] = useState('Location Loading.....');
+  const [displayCurrentAddress, setDisplayCurrentAddress] = useState('Weather Loading.....');
+  const [weather, setCurrentWeather] = useState('Weather is Loading...');
   const [status, requestPermission] = Location.useForegroundPermissions();
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(false)
   const [selected, setSelected] = useState(false);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
+  const [icon, setIcon] = useState('');
+  const [weatherData, setWeatherData] = useState();
 
 
   requestPermission();
@@ -59,16 +62,20 @@ export default function Index() {
   async function getUserWeather() {
     try {
       const data = await getWeather(latitude, longitude);
+      setWeatherData(data.weather[0].description);
+      
       const temp = data.main.temp
-      setDisplayCurrentAddress(Math.round(temp).toString());
+      setCurrentWeather(Math.round(temp).toString());
+      setIcon(getIconUrl(data.weather[0].icon))
     } catch (error) {
       console.error("Error fetching data", error)
     }
-
   }
 
   
   useEffect(() => {
+    checkIfLocationEnabled();
+    getUserLocation();
     getUserWeather();
   }, [])
 
@@ -83,13 +90,25 @@ export default function Index() {
         position: "relative"
       }}
     >
-      <Header />
-      <Button
-      title="Press Me"
-      />
       
-      <Text style={styles.textColor}>{displayCurrentAddress}</Text>
-      <Text style={styles.textColor}>Edit app/index.tsx to edit this screen.</Text>
+      <Header />
+      <Text style={[styles.textColor, styles.weatherText]}>{weatherData}</Text>
+      <View 
+      style={{
+        display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'row'
+      }}>
+        <Image 
+        style={{
+          width: 50, 
+          height: 50
+        }}
+      source={{
+          uri: icon,
+        }} alt="Weather Icon" />
+        <Text style={[styles.textColor, styles.weatherText]}>{weather}°C</Text></View>
     </View>
   );
 }
@@ -101,5 +120,8 @@ const styles = StyleSheet.create({
   },
   textColor: {
     color: 'white'
+  },
+  weatherText: {
+    fontSize: 30
   }
 })
